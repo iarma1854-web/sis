@@ -5,12 +5,10 @@ import (
 	"unicode/utf8"
 )
 
-// Processor — интерфейс логики обработки. Сервис не зависит от конкретного анализатора.
 type Processor interface {
 	Process(input string) (Result, error)
 }
 
-// TextAnalyzer считает статистику текста.
 type TextAnalyzer struct{}
 
 func (TextAnalyzer) Process(input string) (Result, error) {

@@ -121,7 +121,7 @@ func TestProcess_InvalidTransition(t *testing.T) {
 	if err := svc.Process(created.ID); err != nil {
 		t.Fatalf("first Process: %v", err)
 	}
-	err := svc.Process(created.ID) // повторная обработка Completed-задачи
+	err := svc.Process(created.ID)
 	if !errors.Is(err, ErrInvalidTransition) {
 		t.Errorf("err = %v, want ErrInvalidTransition", err)
 	}
@@ -134,7 +134,6 @@ func TestProcess_NotFound(t *testing.T) {
 	}
 }
 
-// failingProcessor демонстрирует подмену реализации интерфейса Processor.
 type failingProcessor struct{}
 
 func (failingProcessor) Process(string) (Result, error) {

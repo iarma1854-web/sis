@@ -5,7 +5,6 @@ import (
 	"sort"
 )
 
-// Service хранит задачи в памяти и управляет их жизненным циклом.
 type Service struct {
 	processor Processor
 	tasks     map[int]*Task
@@ -20,7 +19,6 @@ func NewService(p Processor) *Service {
 	}
 }
 
-// Create валидирует вход, создаёт задачу в состоянии Pending и сохраняет её.
 func (s *Service) Create(input string) (Task, error) {
 	if err := Validate(input); err != nil {
 		return Task{}, fmt.Errorf("create task: %w", err)
@@ -31,7 +29,6 @@ func (s *Service) Create(input string) (Task, error) {
 	return t.clone(), nil
 }
 
-// Get возвращает копию задачи по ID.
 func (s *Service) Get(id int) (Task, error) {
 	t, ok := s.tasks[id]
 	if !ok {
@@ -40,7 +37,6 @@ func (s *Service) Get(id int) (Task, error) {
 	return t.clone(), nil
 }
 
-// Process выполняет задачу: Pending -> Processing -> Completed (или Failed).
 func (s *Service) Process(id int) error {
 	t, ok := s.tasks[id]
 	if !ok {
@@ -53,7 +49,7 @@ func (s *Service) Process(id int) error {
 
 	res, err := s.processor.Process(t.Input)
 	if err != nil {
-		_ = t.transition(Failed) // из Processing переход всегда разрешён
+		_ = t.transition(Failed)
 		return fmt.Errorf("task %d: process: %w", id, err)
 	}
 
@@ -61,7 +57,6 @@ func (s *Service) Process(id int) error {
 	return t.transition(Completed)
 }
 
-// List возвращает копии всех задач, отсортированные по ID.
 func (s *Service) List() []Task {
 	out := make([]Task, 0, len(s.tasks))
 	for _, t := range s.tasks {

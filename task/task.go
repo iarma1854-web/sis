@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// State описывает этап жизненного цикла задачи.
 type State int
 
 const (
@@ -37,13 +36,11 @@ var (
 	ErrInvalidTransition = errors.New("invalid state transition")
 )
 
-// allowed хранит допустимые переходы между состояниями.
 var allowed = map[State][]State{
 	Pending:    {Processing},
 	Processing: {Completed, Failed},
 }
 
-// Result — результат анализа текста.
 type Result struct {
 	Words       int
 	UniqueWords int
@@ -51,15 +48,13 @@ type Result struct {
 	Lines       int
 }
 
-// Task — единица работы: входной текст, состояние и результат.
 type Task struct {
 	ID     int
 	Input  string
 	State  State
-	Result *Result // nil, пока задача не завершена
+	Result *Result
 }
 
-// transition меняет состояние, если переход разрешён.
 func (t *Task) transition(to State) error {
 	for _, s := range allowed[t.State] {
 		if s == to {
@@ -70,7 +65,6 @@ func (t *Task) transition(to State) error {
 	return fmt.Errorf("%w: %s -> %s", ErrInvalidTransition, t.State, to)
 }
 
-// clone возвращает независимую копию задачи (включая Result).
 func (t *Task) clone() Task {
 	c := *t
 	if c.Result != nil {
@@ -80,7 +74,6 @@ func (t *Task) clone() Task {
 	return c
 }
 
-// Validate проверяет входной текст.
 func Validate(input string) error {
 	if strings.TrimSpace(input) == "" {
 		return ErrEmptyInput
