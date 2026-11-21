@@ -10,6 +10,7 @@ type State int
 
 const (
 	Pending State = iota
+	Queued
 	Processing
 	Completed
 	Failed
@@ -19,6 +20,8 @@ func (s State) String() string {
 	switch s {
 	case Pending:
 		return "Pending"
+	case Queued:
+		return "Queued"
 	case Processing:
 		return "Processing"
 	case Completed:
@@ -34,10 +37,17 @@ var (
 	ErrEmptyInput        = errors.New("input is empty")
 	ErrNotFound          = errors.New("task not found")
 	ErrInvalidTransition = errors.New("invalid state transition")
+
+	ErrQueueFull      = errors.New("queue is full")
+	ErrNotRunning     = errors.New("worker pool is not running")
+	ErrShutdown       = errors.New("worker pool is shut down")
+	ErrAlreadyStarted = errors.New("worker pool already started")
+	ErrInvalidConfig  = errors.New("invalid worker pool configuration")
 )
 
 var allowed = map[State][]State{
-	Pending:    {Processing},
+	Pending:    {Queued, Processing},
+	Queued:     {Processing},
 	Processing: {Completed, Failed},
 }
 
